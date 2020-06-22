@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+  labels:
+    deploy: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-app # == pod template: labels
+  template:
+    metadata:
+      labels:
+        app: backend-app
+    spec:
+      containers:
+      - name: backend
+        image: express-app
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend-app # == pod template: labels
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3000 # == pod template: spec ports container port
+  type: LoadBalancer # localhost expose
+
+##
+
+# kubectl apply -f deploy.yml
+
+# kubectl describe deploy backend-deploy
+# kubectl describe svc backend-service
+# kubectl describe ep backend-service
+# kubectl get rs
+# kubectl get po
+
+# GO TO: localhost:3001
+
+# kubectl delete -f deploy.yml
