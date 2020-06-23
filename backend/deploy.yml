@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend-deploy
   labels:
-    deploy: backend
+    name: backend
 spec:
   replicas: 3
   selector:
@@ -26,24 +26,11 @@ kind: Service
 metadata:
   name: backend-service
 spec:
+  type: NodePort
+  # type: LoadBalancer # localhost:3001
   selector:
     app: backend-app # == pod template: labels
   ports:
     - protocol: TCP
       port: 3001
       targetPort: 3000 # == pod template: spec ports container port
-  type: LoadBalancer # localhost expose
-
-##
-
-# kubectl apply -f deploy.yml
-
-# kubectl describe deploy backend-deploy
-# kubectl describe svc backend-service
-# kubectl describe ep backend-service
-# kubectl get rs
-# kubectl get po
-
-# GO TO: localhost:3001
-
-# kubectl delete -f deploy.yml

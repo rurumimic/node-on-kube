@@ -1,8 +1,12 @@
 # Node on Kube
 
-- Kubernetes configurations: [deploy.yml](deploy.yml)
+1. node.js backend
+1. nginx web server
+1. destroy k8s applications
 
-## Usage
+---
+
+## node.js backend
 
 ### Build Docker Image
 
@@ -13,25 +17,54 @@ docker build -t express-app -f backend/Dockerfile backend
 ### Run Kube application
 
 ```bash
-kubectl apply -f deploy.yml
+kubectl apply -f backend/deploy.yml
+```
+
+---
+
+## nginx web server
+
+### Configurations
+
+```bash
+kubectl apply -f web/configmap.yml
+```
+
+### Deploy service
+
+```bash
+kubectl apply -f web/deploy.yml
 ```
 
 ### Open a browser
 
-Go to: [localhost:3001](//localhost:3001)
+Go to: [localhost](//localhost)
+
+---
 
 ### Detail
 
 ```bash
-kubectl describe deploy backend-deploy
-kubectl describe svc backend-service
-kubectl describe ep backend-service
+kubectl get deploy
+kubectl get svc
+kubectl get ep
 kubectl get rs
 kubectl get po
 ```
 
-### Destroy Kube application
+---
+
+## Destroy Kube application
+
+### Web
 
 ```bash
-kubectl delete -f deploy.yml
+kubectl delete -f web/deploy.yml;
+kubectl delete -f web/configmap.yml;
+```
+
+### Backend
+
+```bash
+kubectl delete -f backend/deploy.yml
 ```
