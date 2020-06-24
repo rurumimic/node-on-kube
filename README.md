@@ -37,13 +37,32 @@ kubectl apply -f backend/deploy.yml
 - [kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx)
 - [Installation Guide](https://kubernetes.github.io/ingress-nginx/deploy/#contents)
 
-#### Docker for Mac
+#### Install a ingress controller
+
+##### Docker for Mac
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
 ```
 
-#### Using Helm 2
+##### minikube
+
+For standard usage:
+
+```bash
+minikube addons enable ingress
+```
+
+For development:
+
+```bash
+# Disable the ingress addon:
+minikube addons disable ingress
+make dev-env
+kubectl get pods -n ingress-nginx
+```
+
+##### Using Helm 2
 
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/
