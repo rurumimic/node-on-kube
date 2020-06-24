@@ -1,13 +1,14 @@
 # Node on Kube
 
-1. backend
+1. Backend
    - app: node.js
    - (reverse) proxy: nginx
-1. destroy k8s applications
+1. Ingress
+1. Destroy k8s applications
 
 ---
 
-## backend
+## Backend
 
 ### Build Node.js Docker Image
 
@@ -33,6 +34,42 @@ Go to: [localhost](//localhost)
 
 ---
 
+## Ingress
+
+### NGINX Ingress Controller for Kubernetes
+
+- [kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx)
+- [Installation Guide](https://kubernetes.github.io/ingress-nginx/deploy/#contents)
+
+#### Docker for Mac
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
+```
+
+#### Using Helm 2
+
+```bash
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/
+helm install --name ingress-nginx ingress-nginx/ingress-nginx
+```
+
+#### Verify Installation
+
+```bash
+kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watch
+```
+
+Once the ingress controller pods are running, you can cancel the command typing `Ctrl+C`.
+
+### Deploy Ingress
+
+```bash
+kubectl apply -f ingress.yml
+```
+
+---
+
 ## Check
 
 ### Object List
@@ -43,6 +80,7 @@ kubectl get svc    # services, service
 kubectl get ep     # endpoints, 
 kubectl get rs     # replicasets, replicaset
 kubectl get po     # pods
+kubectl get ing    # ingress
 ```
 
 ### Network
@@ -57,6 +95,12 @@ curl -X GET backend-service.default.svc.cluster.local:80;
 ---
 
 ## Destroy Kube application
+
+### Ingress
+
+```bash
+kubectl delete -f ingress.yml
+```
 
 ### Backend
 

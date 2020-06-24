@@ -46,7 +46,7 @@ kind: Service
 metadata:
   name: backend-service
 spec:
-  type: LoadBalancer # localhost expose
+  type: NodePort
   selector:
     app: backend # == pod template: labels
   ports:
