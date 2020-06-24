@@ -126,6 +126,6 @@ kubectl delete -f ingress.yml
 ### Backend
 
 ```bash
-kubectl delete -f backend/proxy/configmap.yml;
 kubectl delete -f backend/deploy.yml;
+kubectl delete -f backend/proxy/configmap.yml;
 ```

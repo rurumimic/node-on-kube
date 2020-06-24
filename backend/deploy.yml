@@ -46,7 +46,7 @@ kind: Service
 metadata:
   name: backend-service
 spec:
-  type: NodePort
+  # type: ClusterIP # or NodePort
   selector:
     app: backend # == pod template: labels
   ports:
