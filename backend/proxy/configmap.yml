@@ -38,7 +38,7 @@ metadata:
 data:
   default.conf.template: |
     upstream backend {
-      server backend-service:3001;
+      server localhost:3000;
     }
 
     server {

@@ -20,5 +20,5 @@ CMD [ "yarn", "start" ]
 
 ###
 
-# docker build -t express-app .
-# docker run --rm --name backend -p 3000:3000 -d express-app
+# docker build -t node-app .
+# docker run --rm --name node-app -p 3000:3000 -d node-app

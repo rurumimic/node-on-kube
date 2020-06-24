@@ -8,29 +8,48 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: backend-app # == pod template: labels
+      app: backend # == pod template: labels
   template:
     metadata:
       labels:
-        app: backend-app
+        app: backend
     spec:
       containers:
-      - name: backend
-        image: express-app
+      - name: app
+        image: node-app
         imagePullPolicy: Never
         ports:
         - containerPort: 3000
+      - name: proxy
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-conf-file
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        - name: default-conf-file
+          mountPath: /etc/nginx/templates/default.conf.template
+          subPath: default.conf.template
+          readOnly: true
+      volumes:
+      - name: nginx-conf-file
+        configMap:
+          name: nginx-conf
+      - name: default-conf-file
+        configMap:
+          name: default-conf
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
 spec:
-  type: NodePort
-  # type: LoadBalancer # localhost:3001
+  type: LoadBalancer # localhost expose
   selector:
-    app: backend-app # == pod template: labels
+    app: backend # == pod template: labels
   ports:
     - protocol: TCP
-      port: 3001
-      targetPort: 3000 # == pod template: spec ports container port
+      port: 80
+      targetPort: 80 # == pod template: spec ports container port
