@@ -28,10 +28,6 @@ kubectl apply -f backend/proxy/configmap.yml
 kubectl apply -f backend/deploy.yml
 ```
 
-### Open a browser
-
-Go to: [localhost](//localhost)
-
 ---
 
 ## Ingress
@@ -67,6 +63,12 @@ Once the ingress controller pods are running, you can cancel the command typing 
 ```bash
 kubectl apply -f ingress.yml
 ```
+
+---
+
+## Open a browser
+
+Go to: [localhost](//localhost)
 
 ---
 
