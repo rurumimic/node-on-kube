@@ -1,6 +1,7 @@
 # Node on Kube
 
 1. Backend
+   - certificates
    - app: node.js
    - (reverse) proxy: nginx
 1. Ingress
@@ -9,6 +10,27 @@
 ---
 
 ## Backend
+
+### Certificates
+
+[Make Certificates](backend/README.md#make-certificates)
+
+- `backend/certs/chained.crt`
+- `backend/certs/example.localhost.crt`
+- `backend/certs/example.localhost.key`
+- `backend/certs/sub.example.localhost.crt`
+- `backend/certs/sub.example.localhost.csr`
+- `backend/certs/sub.example.localhost.key`
+
+#### Kube Secret
+
+```bash
+kubectl create secret generic backend-secret \
+--from-file=backend/certs/example.localhost.crt \
+--from-file=backend/certs/chained.crt \
+--from-file=backend/certs/sub.example.localhost.crt \
+--from-file=backend/certs/sub.example.localhost.key
+```
 
 ### Build Node.js Docker Image
 

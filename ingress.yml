@@ -5,10 +5,15 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
 spec:
+  tls:
+  - hosts:
+      - sub.example.localhost
+    secretName: backend-secret
   rules:
-  - http:
+  - host: sub.example.localhost
+    http:
       paths:
       - path: /
         backend:
           serviceName: backend-service
-          servicePort: 80
+          servicePort: 443

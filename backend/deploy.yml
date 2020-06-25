@@ -5,7 +5,7 @@ metadata:
   labels:
     name: backend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: backend # == pod template: labels
@@ -23,6 +23,7 @@ spec:
       - name: proxy
         image: nginx:alpine
         ports:
+        - containerPort: 443
         - containerPort: 80
         volumeMounts:
         - name: nginx-conf-file
@@ -33,6 +34,9 @@ spec:
           mountPath: /etc/nginx/templates/default.conf.template
           subPath: default.conf.template
           readOnly: true
+        - name: certificates
+          mountPath: /etc/nginx/certs
+          readOnly: true
       volumes:
       - name: nginx-conf-file
         configMap:
@@ -40,6 +44,9 @@ spec:
       - name: default-conf-file
         configMap:
           name: default-conf
+      - name: certificates
+        secret:
+          secretName: backend-secret
 ---
 apiVersion: v1
 kind: Service
@@ -47,9 +54,15 @@ metadata:
   name: backend-service
 spec:
   # type: ClusterIP # or NodePort
+  type: LoadBalancer
   selector:
     app: backend # == pod template: labels
   ports:
     - protocol: TCP
+      name: https
+      port: 443
+      targetPort: 443 # == pod template: spec ports container port
+    - protocol: TCP
+      name: http
       port: 80
       targetPort: 80 # == pod template: spec ports container port
