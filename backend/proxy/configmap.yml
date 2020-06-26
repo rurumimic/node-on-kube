@@ -15,9 +15,6 @@ data:
     }
 
     http {
-        ssl_session_cache shared:SSL:10m;
-        ssl_session_timeout 10m;
-
         include       /etc/nginx/mime.types;
         default_type  application/octet-stream;
 
@@ -43,20 +40,13 @@ metadata:
 data:
   default.conf.template: |
     upstream backend {
-      server http://localhost:3000;
+      server localhost:3000;
     }
 
     server {
       listen       80;
-      listen       443 ssl;
-      listen  [::]:443;
-      server_name  sub.example.localhost;
-
-      ssl_certificate     /etc/nginx/certs/chained.crt;
-      ssl_certificate_key /etc/nginx/certs/sub.example.localhost.key;
-      # ssl_trusted_certificate /etc/nginx/certs/example.localhost.crt;
-
-      ssl_protocols       TLSv1.2 TLSv1.3;
+      listen  [::]:80;
+      server_name  localhost;
 
       location / {
           proxy_pass         http://backend;

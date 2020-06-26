@@ -15,53 +15,41 @@ spec:
         app: backend
     spec:
       containers:
-      - name: app
-        image: node-app
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 3000
-      - name: proxy
-        image: nginx:alpine
-        ports:
-        - containerPort: 443
-        - containerPort: 80
-        volumeMounts:
-        - name: nginx-conf-file
-          mountPath: /etc/nginx/nginx.conf
-          subPath: nginx.conf
-          readOnly: true
-        - name: default-conf-file
-          mountPath: /etc/nginx/templates/default.conf.template
-          subPath: default.conf.template
-          readOnly: true
-        - name: certificates
-          mountPath: /etc/nginx/certs
-          readOnly: true
+        - name: app
+          image: node-app
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 3000
+        - name: proxy
+          image: nginx:alpine
+          ports:
+          - containerPort: 80
+          volumeMounts:
+            - name: nginx-conf-file
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: default-conf-file
+              mountPath: /etc/nginx/templates/default.conf.template
+              subPath: default.conf.template
+              readOnly: true
       volumes:
-      - name: nginx-conf-file
-        configMap:
-          name: nginx-conf
-      - name: default-conf-file
-        configMap:
-          name: default-conf
-      - name: certificates
-        secret:
-          secretName: backend-secret
+        - name: nginx-conf-file
+          configMap:
+            name: nginx-conf
+        - name: default-conf-file
+          configMap:
+            name: default-conf
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
 spec:
-  # type: ClusterIP # or NodePort
-  type: LoadBalancer
+  type: ClusterIP # or NodePort
   selector:
     app: backend # == pod template: labels
   ports:
-    - protocol: TCP
-      name: https
-      port: 443
-      targetPort: 443 # == pod template: spec ports container port
     - protocol: TCP
       name: http
       port: 80

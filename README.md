@@ -11,27 +11,6 @@
 
 ## Backend
 
-### Certificates
-
-[Make Certificates](backend/README.md#make-certificates)
-
-- `backend/certs/chained.crt`
-- `backend/certs/example.localhost.crt`
-- `backend/certs/example.localhost.key`
-- `backend/certs/sub.example.localhost.crt`
-- `backend/certs/sub.example.localhost.csr`
-- `backend/certs/sub.example.localhost.key`
-
-#### Kube Secret
-
-```bash
-kubectl create secret generic backend-secret \
---from-file=backend/certs/example.localhost.crt \
---from-file=backend/certs/chained.crt \
---from-file=backend/certs/sub.example.localhost.crt \
---from-file=backend/certs/sub.example.localhost.key
-```
-
 ### Build Node.js Docker Image
 
 ```bash
@@ -99,17 +78,37 @@ kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watc
 
 Once the ingress controller pods are running, you can cancel the command typing `Ctrl+C`.
 
+### SSL Certificate
+
+Read [Ingress Secret](docs/secret.md#ingress-secret)
+
+Create the Secret:
+
+```bash
+kubectl apply -f ingress/secret.yml
+```
+
 ### Deploy Ingress
 
 ```bash
-kubectl apply -f ingress.yml
+kubectl apply -f ingress/ingress.yml
 ```
 
 ---
 
-## Open a browser
+## Test
 
-Go to: [localhost](//localhost)
+### /etc/hosts
+
+```bash
+127.0.0.1 example.localhost
+```
+
+### Open a browser
+
+Go to: [http://example.localhost](http://example.localhost)
+
+It is automatically redirected to HTTPS.
 
 ---
 
@@ -143,6 +142,12 @@ curl -X GET backend-service.default.svc.cluster.local:80;
 
 ```bash
 kubectl delete -f ingress.yml
+```
+
+#### Secret
+
+```bash
+kubectl delete -f ingress/secret.yml
 ```
 
 ### Backend

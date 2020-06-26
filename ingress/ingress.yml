@@ -7,13 +7,13 @@ metadata:
 spec:
   tls:
   - hosts:
-      - sub.example.localhost
-    secretName: backend-secret
+    - example.localhost
+    secretName: ingress-secret
   rules:
-  - host: sub.example.localhost
+  - host: example.localhost
     http:
       paths:
       - path: /
         backend:
           serviceName: backend-service
-          servicePort: 443
+          servicePort: 80
