@@ -9,6 +9,16 @@
 
 ---
 
+## Setup
+
+### /etc/hosts
+
+```bash
+127.0.0.1 example.localhost
+```
+
+---
+
 ## Backend
 
 ### Build Node.js Docker Image
@@ -17,16 +27,11 @@
 docker build -t node-app -f backend/app/Dockerfile node-app
 ```
 
-### Nginx Configurations
-
-```bash
-kubectl apply -f backend/proxy/configmap.yml
-```
-
 ### Deploy Backend Service
 
 ```bash
-kubectl apply -f backend/deploy.yml
+kubectl apply -f backend/proxy/configmap.yml;
+kubectl apply -f backend/deploy.yml;
 ```
 
 ---
@@ -78,31 +83,31 @@ kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watc
 
 Once the ingress controller pods are running, you can cancel the command typing `Ctrl+C`.
 
-### SSL Certificate
+### Basic Ingress: TLS 
 
-Read [Ingress Secret](docs/secret.md#ingress-secret)
+#### SSL Certificate
+
+Read [Ingress Secret](ingress/basic/README.md#ingress-secret)
 
 Create the Secret:
 
 ```bash
-kubectl apply -f ingress/secret.yml
+kubectl apply -f ingress/basic/secret.yml
 ```
 
-### Deploy Ingress
+#### Deploy Ingress
 
 ```bash
-kubectl apply -f ingress/ingress.yml
+kubectl apply -f ingress/basic/ingress.yml
 ```
+
+### (Option) Auth Ingress: Client Certificate Authentication
+
+Read [Client Certificate Authentication: Mutual Authentication](ingress/auth-client/README.md)
 
 ---
 
 ## Test
-
-### /etc/hosts
-
-```bash
-127.0.0.1 example.localhost
-```
 
 ### Open a browser
 
@@ -141,13 +146,8 @@ curl -X GET backend-service.default.svc.cluster.local:80;
 ### Ingress
 
 ```bash
-kubectl delete -f ingress.yml
-```
-
-#### Secret
-
-```bash
-kubectl delete -f ingress/secret.yml
+kubectl delete -f ingress/basic/ingress.yml;
+kubectl delete -f ingress/basic/secret.yml;
 ```
 
 ### Backend
