@@ -1,11 +1,19 @@
 # Node on Kube
 
-1. Backend
-   - certificates
+1. Setup
+2. Backend
    - app: node.js
-   - (reverse) proxy: nginx
-1. Ingress
-1. Destroy k8s applications
+   - reverse proxy: nginx
+3. Ingress
+   - ingress controller: nginx
+   - secret: certificates
+   - deploy ingress
+   - (option) mutual authentication
+4. Test
+5. Service Mesh
+   - Istio
+6. Destroy k8s applications
+7. Tip
 
 ---
 
@@ -51,29 +59,9 @@ kubectl apply -f backend/deploy.yml;
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
 ```
 
-##### minikube
-
-For standard usage:
-
-```bash
-minikube addons enable ingress
-```
-
-For development:
-
-```bash
-# Disable the ingress addon:
-minikube addons disable ingress
-make dev-env
-kubectl get pods -n ingress-nginx
-```
-
-##### Using Helm 2
-
-```bash
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/
-helm install --name ingress-nginx ingress-nginx/ingress-nginx
-```
+Using [other platforms](#install-a-ingress-controller-with-other-platforms): 
+- minikube
+- Helm 2
 
 #### Verify Installation
 
@@ -117,7 +105,31 @@ It is automatically redirected to HTTPS.
 
 ---
 
-## Check
+## Service Mesh
+
+### Istio
+
+---
+
+## Destroy Kube application
+
+### Ingress
+
+```bash
+kubectl delete -f ingress/basic/ingress.yml;
+kubectl delete -f ingress/basic/secret.yml;
+```
+
+### Backend
+
+```bash
+kubectl delete -f backend/deploy.yml;
+kubectl delete -f backend/proxy/configmap.yml;
+```
+
+---
+
+## Tip
 
 ### Object List
 
@@ -141,18 +153,32 @@ curl -X GET backend-service.default.svc.cluster.local:80;
 
 ---
 
-## Destroy Kube application
+## Appendix
 
 ### Ingress
 
+#### Install a ingress controller with other platforms
+
+##### minikube
+
+For standard usage:
+
 ```bash
-kubectl delete -f ingress/basic/ingress.yml;
-kubectl delete -f ingress/basic/secret.yml;
+minikube addons enable ingress
 ```
 
-### Backend
+For development:
 
 ```bash
-kubectl delete -f backend/deploy.yml;
-kubectl delete -f backend/proxy/configmap.yml;
+# Disable the ingress addon:
+minikube addons disable ingress
+make dev-env
+kubectl get pods -n ingress-nginx
+```
+
+##### Helm 2
+
+```bash
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/
+helm install --name ingress-nginx ingress-nginx/ingress-nginx
 ```
