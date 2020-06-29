@@ -103,6 +103,13 @@ Go to: [http://example.localhost](http://example.localhost)
 
 It is automatically redirected to HTTPS.
 
+### Init containers
+
+Read [Init Containers](docs/init.containers.md)
+
+1. Open [http://example.localhost/wiki](http://example.localhost/wiki).
+1. Compare with [Wikipedia: Bauhaus](https://en.wikipedia.org/wiki/Bauhaus).
+
 ---
 
 ## Service Mesh

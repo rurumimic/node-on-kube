@@ -14,6 +14,19 @@ spec:
       labels:
         app: backend
     spec:
+      initContainers:
+      - name: install
+        image: rurumimic/wget
+        command: 
+        - wget
+        - --no-check-certificate
+        - -k # --convert-links
+        - -O # --output-document=FILE
+        - /init/index.html
+        - https://en.wikipedia.org/wiki/Bauhaus
+        volumeMounts:
+        - name: init
+          mountPath: /init
       containers:
         - name: app
           image: node-app
@@ -25,6 +38,9 @@ spec:
           ports:
           - containerPort: 80
           volumeMounts:
+            - name: init
+              mountPath: /usr/share/nginx/html/init
+              readOnly: true
             - name: nginx-conf-file
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
@@ -34,6 +50,8 @@ spec:
               subPath: default.conf.template
               readOnly: true
       volumes:
+        - name: init
+          emptyDir: {}
         - name: nginx-conf-file
           configMap:
             name: nginx-conf
