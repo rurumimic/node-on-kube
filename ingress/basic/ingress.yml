@@ -4,6 +4,7 @@ metadata:
   name: ingress-services
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   tls:
   - hosts:
@@ -13,7 +14,14 @@ spec:
   - host: example.localhost
     http:
       paths:
-      - path: /
+      - path: /one(/|$)(.*)
         backend:
           serviceName: backend-service
+          servicePort: 80
+  - host: example.localhost
+    http:
+      paths:
+      - path: /two(/|$)(.*)
+        backend:
+          serviceName: backend-service2
           servicePort: 80

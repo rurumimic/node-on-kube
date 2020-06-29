@@ -54,3 +54,60 @@ spec:
       name: http
       port: 80
       targetPort: 80 # == pod template: spec ports container port
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy2
+  labels:
+    name: backend2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend2 # == pod template: labels
+  template:
+    metadata:
+      labels:
+        app: backend2
+    spec:
+      containers:
+        - name: app
+          image: node-app
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 3000
+        - name: proxy
+          image: nginx:alpine
+          ports:
+          - containerPort: 80
+          volumeMounts:
+            - name: nginx-conf-file
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: default-conf-file
+              mountPath: /etc/nginx/templates/default.conf.template
+              subPath: default.conf.template
+              readOnly: true
+      volumes:
+        - name: nginx-conf-file
+          configMap:
+            name: nginx-conf
+        - name: default-conf-file
+          configMap:
+            name: default-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service2
+spec:
+  type: ClusterIP # or NodePort
+  selector:
+    app: backend2 # == pod template: labels
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 80 # == pod template: spec ports container port
