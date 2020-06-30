@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  h1= title
+  - var list = pets
+  table(style='border-collapse: collapse', border='1')
+    tr
+      th(style='padding: 8px') Name
+      th(style='padding: 8px') Owner
+      th(style='padding: 8px') Species
+      th(style='padding: 8px') Sex
+      th(style='padding: 8px') Birth
+      th(style='padding: 8px') Death
+    each item in list
+      tr
+        td(style='padding: 8px') #{item['name']}
+        td(style='padding: 8px') #{item['owner']}
+        td(style='padding: 8px') #{item['species']}
+        td(style='padding: 8px') #{item['sex']}
+        td(style='padding: 8px') #{item['birth']}
+        td(style='padding: 8px') #{item['death']} 
+
+  ul
+    li
+      a(href='/') home

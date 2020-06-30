@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-conf
+data:
+  mysql_root_password: password
+  mysql_database: develop
+  mysql_user: master
+  mysql_password: mypw

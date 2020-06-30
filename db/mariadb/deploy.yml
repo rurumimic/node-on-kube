@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deploy
+  labels:
+    name: mariadb
+spec:
+  selector:
+    matchLabels:
+      app: mariadb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: db
+        image: mariadb:latest
+        args: ["--character-set-server=utf8", "--collation-server=utf8_unicode_ci"]
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-conf
+              key: mysql_root_password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-conf
+              key: mysql_database
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-conf
+              key: mysql_user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-conf
+              key: mysql_password
+        ports:
+        - name: mariadb
+          containerPort: 3306
+        volumeMounts:
+        - name: mariadb-persistent-storage
+          mountPath: /var/lib/myqsl
+        - name: config
+          mountPath: /config
+          readOnly: true
+      volumes:
+      - name: mariadb-persistent-storage
+        persistentVolumeClaim:
+          claimName: mariadb-pv-claim
+      - name: config
+        configMap:
+          name: mariadb-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-service
+spec:
+  selector:
+    app: mariadb
+  ports:
+    - protocol: TCP
+      name: mariadb
+      port: 3306
+      targetPort: 3306
+  clusterIP: None

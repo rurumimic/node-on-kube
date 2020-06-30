@@ -1,6 +1,8 @@
 # Node on Kube
 
 1. Setup
+1. Database
+   - mariadb & persistent storage
 2. Backend
    - app: node.js
    - reverse proxy: nginx
@@ -27,12 +29,38 @@
 
 ---
 
+## Database
+
+### MariaDB
+
+```bash
+kubectl apply -f db/mariadb/configmap.yml;
+kubectl apply -f db/mariadb/volume.yml;
+kubectl apply -f db/mariadb/deploy.yml;
+```
+
+#### Port forward
+
+```bash
+kubectl port-forward svc/mariadb-service 3306:3306
+```
+
+#### Connect
+
+```bash
+mysql -h 127.0.0.1 -P 3306 -u master -pmypw develop
+```
+
+Read [Setup MariaDB](db/mariadb/README.md)
+
+---
+
 ## Backend
 
 ### Build Node.js Docker Image
 
 ```bash
-docker build -t node-app -f backend/app/Dockerfile node-app
+docker build -t node-app backend/app
 ```
 
 ### Deploy Backend Service
@@ -132,6 +160,14 @@ kubectl delete -f ingress/basic/secret.yml;
 ```bash
 kubectl delete -f backend/deploy.yml;
 kubectl delete -f backend/proxy/configmap.yml;
+```
+
+### MariaDB
+
+```bash
+kubectl delete -f db/mariadb/deploy.yml;
+kubectl delete -f db/mariadb/volume.yml;
+kubectl delete -f db/mariadb/configmap.yml;
 ```
 
 ---

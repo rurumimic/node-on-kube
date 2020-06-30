@@ -2,4 +2,20 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  ul
+    li #{host[0]}
+    li #{host[1]} #{host[2]} #{host[3]} #{host[4]}
+    li #{host[6]} / #{host[5]}
+
+  ul 
+    - var list = host[7]
+    each item in list
+      li= item
+
+  ul
+    li
+      a(href='/image') image
+    li
+      a(href='/pet') pet
+    li
+      a(href='/wiki') wiki

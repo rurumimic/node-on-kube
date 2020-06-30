@@ -33,6 +33,28 @@ spec:
           imagePullPolicy: Never
           ports:
           - containerPort: 3000
+          env:
+            - name: MYSQL_HOST
+              value: mariadb-service
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-conf
+                  key: mysql_database
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-conf
+                  key: mysql_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-conf
+                  key: mysql_password
+          volumeMounts:
+            - name: mariadb-config
+              mountPath: /config/mariadb
+              readOnly: true
         - name: proxy
           image: nginx:alpine
           ports:
@@ -58,6 +80,9 @@ spec:
         - name: default-conf-file
           configMap:
             name: default-conf
+        - name: mariadb-config
+          configMap:
+            name: mariadb-conf
 ---
 apiVersion: v1
 kind: Service
