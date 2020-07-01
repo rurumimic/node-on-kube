@@ -29,6 +29,35 @@
 
 ---
 
+## Istio
+
+### (First time only) Add label
+
+```bash
+kubectl label namespace default istio-injection=enabled
+```
+
+### (First time only) Install
+
+```bash
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-1.6.3
+```
+
+### Export PATH
+
+```bash
+export PATH=$PWD/bin:$PATH
+```
+
+### Install a profile
+
+```bash
+istioctl install --set profile=demo
+```
+
+---
+
 ## Database
 
 ### MariaDB
@@ -39,16 +68,11 @@ kubectl apply -f db/mariadb/volume.yml;
 kubectl apply -f db/mariadb/deploy.yml;
 ```
 
-#### Port forward
+### Insert data from dump files
 
 ```bash
-kubectl port-forward svc/mariadb-service 3306:3306
-```
-
-#### Connect
-
-```bash
-mysql -h 127.0.0.1 -P 3306 -u master -pmypw develop
+kubectl exec -i $(kubectl get pod --selector=app=mariadb --template '{{range .items}}{{.metadata.name}}{{end}}') -c db \
+-- sh -c 'exec mysql -umaster -pmypw' < db/mariadb/data/dump.sql
 ```
 
 Read [Setup MariaDB](db/mariadb/README.md)
@@ -74,12 +98,35 @@ kubectl apply -f backend/deploy.yml;
 
 ## Ingress
 
+### Istio Gateway
+
+```bash
+kubectl apply -f ingress/istio/gateway.yml;
+istioctl analyze;
+```
+
+```bash
+kubectl get svc istio-ingressgateway -n istio-system
+```
+
+```bash
+export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}');
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}');
+export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}');
+export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT;
+echo $GATEWAY_URL;
+```
+
+```bash
+echo http://$GATEWAY_URL
+```
+
 ### NGINX Ingress Controller for Kubernetes
 
 - [kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx)
 - [Installation Guide](https://kubernetes.github.io/ingress-nginx/deploy/#contents)
 
-#### Install a ingress controller
+#### (First time only) Install a ingress controller
 
 ##### Docker for Mac
 
@@ -138,11 +185,17 @@ Read [Init Containers](docs/init.containers.md)
 1. Open [http://example.localhost/wiki](http://example.localhost/wiki).
 1. Compare with [Wikipedia: Bauhaus](https://en.wikipedia.org/wiki/Bauhaus).
 
----
+### Kiali
 
-## Service Mesh
+- Username: admin
+- Password: admin
 
-### Istio
+```bash
+istioctl dashboard kiali
+```
+
+1. Left menu: Graph
+1. Namespace: default
 
 ---
 
@@ -168,6 +221,30 @@ kubectl delete -f backend/proxy/configmap.yml;
 kubectl delete -f db/mariadb/deploy.yml;
 kubectl delete -f db/mariadb/volume.yml;
 kubectl delete -f db/mariadb/configmap.yml;
+```
+
+### Istio profile
+
+```bash
+istioctl manifest generate --set profile=demo | kubectl delete -f -
+```
+
+---
+
+## Destroy Ingress
+
+### Istio
+
+```bash
+kubectl apply -f ingress/istio/gateway.yml;
+```
+
+### NGINX Ingress Controller
+
+**Docker for Mac**
+
+```bash
+kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
 ```
 
 ---

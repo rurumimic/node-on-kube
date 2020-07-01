@@ -1,5 +1,21 @@
 # Setup MariaDB
 
+## Connect
+
+### Port forward
+
+```bash
+kubectl port-forward svc/mariadb-service 3306:3306
+```
+
+### Connect
+
+```bash
+mysql -h 127.0.0.1 -P 3306 -u master -pmypw develop
+```
+
+---
+
 ## Setup
 
 ### Create a table
@@ -60,4 +76,28 @@ SELECT * FROM pet;
 
 ```bash
 exit
+```
+
+---
+
+## Backup
+
+### Get a pod
+
+```bash
+kubectl get pod --selector=app=mariadb --template '{{range .items}}{{.metadata.name}}{{end}}'
+```
+
+### Create database dumps
+
+```bash
+kubectl exec $(kubectl get pod --selector=app=mariadb --template '{{range .items}}{{.metadata.name}}{{end}}') -c db \
+-- sh -c 'exec mysqldump --all-databases -umaster -pmypw' > dump.sql
+```
+
+### Restore data from dump files
+
+```bash
+kubectl exec -i $(kubectl get pod --selector=app=mariadb --template '{{range .items}}{{.metadata.name}}{{end}}') -c db \
+-- sh -c 'exec mysql -umaster -pmypw' < db/mariadb/data/dump.sql
 ```

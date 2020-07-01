@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "node -r dotenv/config ./bin/www dotenv_config_path=.env.local",
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "db": "kubectl port-forward svc/mariadb-service 3306:3306"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
