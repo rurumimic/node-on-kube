@@ -103,7 +103,9 @@ kubectl apply -f backend/deploy.yml;
 
 ### Istio Ingress Secure Gateway
 
-Create a gateway and a virtual service:
+1. [Set IP and Port](ingress/istio/README.md#set-ip-and-port)
+2. [Create certificates](ingress/istio/README.md#create-certificates)
+3. Create a gateway and a virtual service:
 
 ```bash
 kubectl apply -f ingress/istio/gateway.yml;
@@ -115,26 +117,6 @@ Check ingress settings:
 istioctl analyze;
 
 ✔ No validation issues found when analyzing namespace: default.
-```
-
-Check `EXTERNAL-IP`:
-
-```bash
-kubectl get svc istio-ingressgateway -n istio-system
-```
-
-If `EXTERNAL-IP=localhost`:
-
-```bash
-export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}');
-export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}');
-export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}');
-export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}');
-```
-
-```bash
-export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT;
-echo http://$GATEWAY_URL ;
 ```
 
 ### NGINX Ingress Controller for Kubernetes
@@ -191,12 +173,15 @@ Read [Client Certificate Authentication: Mutual Authentication](ingress/ingress-
 ### CURL
 
 ```bash
-curl -s -I -HHost:example.localhost "http://$INGRESS_HOST:$INGRESS_PORT"
+curl -v -HHost:example.localhost --resolve "example.localhost:443:127.0.0.1" \
+--cacert ingress/istio/certs/example.localhost.crt "https://example.localhost:443"
+
+HTTP/2 200
 ```
 
 ### Open a browser
 
-Go to: [http://example.localhost](http://example.localhost)
+Open [http://example.localhost](http://example.localhost)
 
 It is automatically redirected to HTTPS.
 
@@ -228,7 +213,8 @@ istioctl dashboard kiali
 #### Istio Gateway
 
 ```bash
-kubectl apply -f ingress/istio/gateway.yml;
+kubectl delete -n istio-system secret gateway-secret;
+kubectl delete -f ingress/istio/gateway.yml;
 ```
 
 ```bash

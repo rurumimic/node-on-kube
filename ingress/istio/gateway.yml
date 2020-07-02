@@ -10,8 +10,19 @@ spec:
       number: 80
       name: http
       protocol: HTTP
+    tls:
+      httpsRedirect: true
     hosts:
-    - "example.localhost"
+    - example.localhost
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: gateway-secret
+    hosts:
+    - example.localhost
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -19,7 +30,7 @@ metadata:
   name: backend
 spec:
   hosts:
-  - "example.localhost"
+  - example.localhost
   gateways:
   - istio-gateway
   http:
