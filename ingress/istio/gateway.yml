@@ -19,7 +19,7 @@ metadata:
   name: backend
 spec:
   hosts:
-  - "*"
+  - "example.localhost"
   gateways:
   - istio-gateway
   http:

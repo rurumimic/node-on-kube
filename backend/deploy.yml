@@ -22,7 +22,7 @@ spec:
         - --no-check-certificate
         - -k # --convert-links
         - -O # --output-document=FILE
-        - /init/index.html
+        - /init/bauhaus.html
         - https://en.wikipedia.org/wiki/Bauhaus
         volumeMounts:
         - name: init

@@ -6,7 +6,7 @@
    1. Save files in a directory: `wget -O /init/FILE LINK`
 1. Run containers: `proxy`
    1. Mount a volume to a directroy: `init` Volume → `/usr/share/nginx/html/init`
-1. Use files in container: `default.conf` - `/usr/share/nginx/html/init/index.html`
+1. Use files in container: `default.conf` - `/usr/share/nginx/html/init/bauhaus.html`
 
 ## Deployment
 
@@ -26,7 +26,7 @@ spec:
       - --no-check-certificate
       - -k # --convert-links
       - -O # --output-document=FILE
-      - /init/index.html
+      - /init/bauhaus.html
       - https://en.wikipedia.org/wiki/Bauhaus
       volumeMounts: # 2-1. mount a volume
       - name: init
@@ -50,12 +50,12 @@ spec:
 server {
   location /wiki {
       alias /usr/share/nginx/html/init; # 4. use files in container
-      index index.html;
+      index bauhaus.html;
   }
 }
 ```
 
 ## Test
 
-1. Open [http://example.localhost/wiki](http://example.localhost/wiki).
+1. Open [http://example.localhost/wiki/bauhaus.html](http://example.localhost/wiki/bauhaus.html).
 1. Compare with [Wikipedia: Bauhaus](https://en.wikipedia.org/wiki/Bauhaus).

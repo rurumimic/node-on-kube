@@ -26,8 +26,8 @@ Mutual Authentication flow from codeproject.com: [An Introduction to Mutual SSL 
 ## Create certificates
 
 ```bash
-mkdir -p ingress/auth-client/certs
-cd ingress/auth-client/certs
+mkdir -p ingress/ingress-nginx/mutual/certs
+cd ingress/ingress-nginx/mutual/certs
 ```
 
 Generate the CA Key and Certificate:
@@ -69,20 +69,12 @@ kubectl create secret generic tls-secret --from-file=tls.crt=server.crt --from-f
 
 [ingress.yml](ingress.yml)
 
-### Go to top directory
-
-```bash
-cd ../../.. # node-on-kube/
-```
-
 ### Create a ingress resource
 
-```bash
-# 
-# kubectl apply -f backend/proxy/configmap.yml; 
-# kubectl apply -f backend/deploy.yml;
+In the project root directory:
 
-kubectl apply -f ingress/auth-client/ingress.yml;
+```bash
+kubectl apply -f ingress/ingress-nginx/mutual/ingress.yml;
 ```
 
 ---
@@ -115,8 +107,8 @@ curl https://client.auth.localhost -k
 
 ```bash
 curl https://client.auth.localhost -k \
---cert ingress/auth-client/certs/client.crt \
---key ingress/auth-client/certs/client.key
+--cert ingress/ingress-nginx/mutual/certs/client.crt \
+--key ingress/ingress-nginx/mutual/certs/client.key
 ```
 
 ```html
@@ -140,7 +132,7 @@ curl https://client.auth.localhost -k \
 ### Ingress
 
 ```bash
-kubectl delete -f ingress/auth-client/ingress.yml
+kubectl delete -f ingress/ingress-nginx/mutual/ingress.yml
 ```
 
 ### Secrets

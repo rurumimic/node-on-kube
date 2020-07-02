@@ -1,19 +1,22 @@
 # Node on Kube
 
 1. Setup
+1. Service Mesh
+   - Istio
 1. Database
-   - mariadb & persistent storage
+   - MariaDB
+   - Persistent storage
 2. Backend
    - app: node.js
    - reverse proxy: nginx
 3. Ingress
-   - ingress controller: nginx
+   - ingress controller
+     - istio gateway
+     - ingress-nginx
    - secret: certificates
    - deploy ingress
    - (option) mutual authentication
 4. Test
-5. Service Mesh
-   - Istio
 6. Destroy k8s applications
 7. Tip
 
@@ -98,27 +101,40 @@ kubectl apply -f backend/deploy.yml;
 
 ## Ingress
 
-### Istio Gateway
+### Istio Ingress Secure Gateway
+
+Create a gateway and a virtual service:
 
 ```bash
 kubectl apply -f ingress/istio/gateway.yml;
-istioctl analyze;
 ```
+
+Check ingress settings:
+
+```bash
+istioctl analyze;
+
+✔ No validation issues found when analyzing namespace: default.
+```
+
+Check `EXTERNAL-IP`:
 
 ```bash
 kubectl get svc istio-ingressgateway -n istio-system
 ```
 
+If `EXTERNAL-IP=localhost`:
+
 ```bash
 export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}');
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}');
 export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}');
-export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT;
-echo $GATEWAY_URL;
+export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}');
 ```
 
 ```bash
-echo http://$GATEWAY_URL
+export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT;
+echo http://$GATEWAY_URL ;
 ```
 
 ### NGINX Ingress Controller for Kubernetes
@@ -150,27 +166,33 @@ Once the ingress controller pods are running, you can cancel the command typing 
 
 #### SSL Certificate
 
-Read [Ingress Secret](ingress/basic/README.md#ingress-secret)
+Read [Ingress Secret](ingress/ingress-nginx/basic/README.md#ingress-secret)
 
 Create the Secret:
 
 ```bash
-kubectl apply -f ingress/basic/secret.yml
+kubectl apply -f ingress/ingress-nginx/basic/secret.yml
 ```
 
 #### Deploy Ingress
 
 ```bash
-kubectl apply -f ingress/basic/ingress.yml
+kubectl apply -f ingress/ingress-nginx/basic/ingress.yml
 ```
 
 ### (Option) Auth Ingress: Client Certificate Authentication
 
-Read [Client Certificate Authentication: Mutual Authentication](ingress/auth-client/README.md)
+Read [Client Certificate Authentication: Mutual Authentication](ingress/ingress-nginx/mutual/README.md)
 
 ---
 
 ## Test
+
+### CURL
+
+```bash
+curl -s -I -HHost:example.localhost "http://$INGRESS_HOST:$INGRESS_PORT"
+```
 
 ### Open a browser
 
@@ -182,7 +204,7 @@ It is automatically redirected to HTTPS.
 
 Read [Init Containers](docs/init.containers.md)
 
-1. Open [http://example.localhost/wiki](http://example.localhost/wiki).
+1. Open [http://example.localhost/wiki/bauhaus.html](http://example.localhost/wiki/bauhaus.html).
 1. Compare with [Wikipedia: Bauhaus](https://en.wikipedia.org/wiki/Bauhaus).
 
 ### Kiali
@@ -203,9 +225,27 @@ istioctl dashboard kiali
 
 ### Ingress
 
+#### Istio Gateway
+
+```bash
+kubectl apply -f ingress/istio/gateway.yml;
+```
+
+```bash
+istioctl manifest generate --set profile=demo | kubectl delete -f -
+```
+
+#### ingress-nginx
+
 ```bash
 kubectl delete -f ingress/basic/ingress.yml;
 kubectl delete -f ingress/basic/secret.yml;
+```
+
+**Docker for Mac**
+
+```bash
+kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
 ```
 
 ### Backend
@@ -221,30 +261,6 @@ kubectl delete -f backend/proxy/configmap.yml;
 kubectl delete -f db/mariadb/deploy.yml;
 kubectl delete -f db/mariadb/volume.yml;
 kubectl delete -f db/mariadb/configmap.yml;
-```
-
-### Istio profile
-
-```bash
-istioctl manifest generate --set profile=demo | kubectl delete -f -
-```
-
----
-
-## Destroy Ingress
-
-### Istio
-
-```bash
-kubectl apply -f ingress/istio/gateway.yml;
-```
-
-### NGINX Ingress Controller
-
-**Docker for Mac**
-
-```bash
-kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
 ```
 
 ---
