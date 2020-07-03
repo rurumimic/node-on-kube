@@ -1,28 +1,44 @@
 # Node on Kube
 
 1. Setup
-1. Service Mesh
+2. Service Mesh
    - Istio
-1. Database
+3. Database
    - MariaDB
    - Persistent storage
-2. Backend
+4. Backend
    - app: node.js
    - reverse proxy: nginx
-3. Ingress
+5. Ingress
    - ingress controller
      - istio gateway
      - ingress-nginx
    - secret: certificates
    - deploy ingress
    - (option) mutual authentication
-4. Test
-6. Destroy k8s applications
-7. Tip
+6. Test
+7. Horizontal Pod Autoscaler
+8. Destroy k8s applications
+9. Tip
 
 ---
 
 ## Setup
+
+### Docker Desktop
+
+[Docker Desktop for Mac Edge release notes](https://docs.docker.com/docker-for-mac/edge-release-notes/)
+
+- Docker 19+
+- Docker Compose 1.26+
+- Kubernetes 1.18+ (for Kubernetes Metrics Server)
+
+Settings:
+
+1. Resources (for Istio)
+   - CPUs: 4
+   - Memory: 8GB
+1. Enable Kubernetes
 
 ### /etc/hosts
 
@@ -203,6 +219,12 @@ istioctl dashboard kiali
 
 1. Left menu: Graph
 1. Namespace: default
+
+---
+
+## Horizontal Pod Autoscaler
+
+Read [Horizontal Pod Autoscaler](docs/horizontal.pod.autoscaler.md)
 
 ---
 

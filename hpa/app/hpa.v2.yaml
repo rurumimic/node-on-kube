@@ -1,0 +1,96 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  creationTimestamp: "2020-07-03T05:39:12Z"
+  managedFields:
+  - apiVersion: autoscaling/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        f:maxReplicas: {}
+        f:minReplicas: {}
+        f:scaleTargetRef:
+          f:apiVersion: {}
+          f:kind: {}
+          f:name: {}
+        f:targetCPUUtilizationPercentage: {}
+    manager: kubectl
+    operation: Update
+    time: "2020-07-03T05:39:12Z"
+  - apiVersion: autoscaling/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:autoscaling.alpha.kubernetes.io/conditions: {}
+      f:status:
+        f:currentReplicas: {}
+        f:desiredReplicas: {}
+    manager: kube-controller-manager
+    operation: Update
+    time: "2020-07-03T05:50:21Z"
+  - apiVersion: autoscaling/v2beta2
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        f:metrics: {}
+      f:status:
+        f:currentMetrics: {}
+    manager: kubectl
+    operation: Update
+    time: "2020-07-03T05:51:17Z"
+  name: php-apache
+  namespace: default
+  resourceVersion: "52535"
+  selfLink: /apis/autoscaling/v2beta2/namespaces/default/horizontalpodautoscalers/php-apache
+  uid: c4bee92e-bab7-4696-848c-bf44239eec9c
+spec:
+  maxReplicas: 5
+  metrics:
+  - pods:
+      metric:
+        name: packets-per-second
+      target:
+        averageValue: 1k
+        type: AverageValue
+    type: Pods
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+status:
+  conditions:
+  - lastTransitionTime: "2020-07-03T05:39:28Z"
+    message: recommended size matches current size
+    reason: ReadyForNewScale
+    status: "True"
+    type: AbleToScale
+  - lastTransitionTime: "2020-07-03T05:39:28Z"
+    message: the HPA was able to successfully calculate a replica count from cpu resource
+      utilization (percentage of request)
+    reason: ValidMetricFound
+    status: "True"
+    type: ScalingActive
+  - lastTransitionTime: "2020-07-03T05:44:32Z"
+    message: the desired replica count is less than the minimum replica count
+    reason: TooFewReplicas
+    status: "True"
+    type: ScalingLimited
+  currentMetrics:
+  - type: ""
+  - resource:
+      current:
+        averageUtilization: 0
+        averageValue: 1m
+      name: cpu
+    type: Resource
+  currentReplicas: 1
+  desiredReplicas: 1
